@@ -1,10 +1,15 @@
 import "./App.css";
 import "antd/dist/reset.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button, Card, Radio, Space, Checkbox } from "antd";
-import ReactECharts from "echarts-for-react";
-import * as echarts from "echarts";
+import Pulse from "./modules/Pulse";
+import Temperature from "./modules/Temperature";
+import Sweat from "./modules/Sweat";
+import Gas from "./modules/Gas";
+import UV from "./modules/UV";
+import React from "react";
+
 function App() {
   const [type, setType] = useState("line");
   const [status, setStatus] = useState("pause");
@@ -24,22 +29,7 @@ function App() {
       axios.get("setFlag?Flag=0");
     }
   };
-  const options = {
-    xAxis: {
-      type: "category",
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    },
-    yAxis: {
-      type: "value",
-    },
-    series: [
-      {
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
-        type: "line",
-        smooth: true,
-      },
-    ],
-  };
+
   return (
     <div className="App">
       <div className="header">
@@ -52,39 +42,29 @@ function App() {
           onChange={onChange}
         />
         <br />
-        {type === "data" ? (
-          <>
-            <div>数据</div>
-          </>
-        ) : (
-          <div>
-            <ReactECharts option={options} theme={"theme_name"} />
-            <ReactECharts option={options} theme={"theme_name"} />
-            <ReactECharts option={options} theme={"theme_name"} />
-            <ReactECharts option={options} theme={"theme_name"} />
-            <ReactECharts option={options} theme={"theme_name"} />
-          </div>
-        )}
+        <div>
+          {checkedList.indexOf("Pulse") > -1 && <Pulse type={type} />}
+          {checkedList.indexOf("Temperature") > -1 && (
+            <Temperature type={type} />
+          )}
+          {checkedList.indexOf("Sweat") > -1 && <Sweat type={type} />}
+          {checkedList.indexOf("Gas") > -1 && <Gas type={type} />}
+          {checkedList.indexOf("UV") > -1 && <UV type={type} />}
+        </div>
       </div>
       <div className="footer">
         <Space>
           {status === "pause" ? (
-            <Button
-              onClick={() => handlePlayPause("play")}
-              type="primary"    
-            >
+            <Button onClick={() => handlePlayPause("play")} type="primary">
               Start
             </Button>
           ) : (
-            <Button
-              onClick={() => handlePlayPause("pause")}
-              type="primary"
-            >
+            <Button onClick={() => handlePlayPause("pause")} type="primary">
               Pause
             </Button>
           )}
           {type === "data" ? (
-            <Button onClick={() => setType("charts")} type="primary">
+            <Button onClick={() => setType("line")} type="primary">
               Line
             </Button>
           ) : (
@@ -92,6 +72,7 @@ function App() {
               Data
             </Button>
           )}
+          <Button>Save</Button>
         </Space>
       </div>
     </div>
